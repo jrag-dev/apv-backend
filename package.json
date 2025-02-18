@@ -1,0 +1,19 @@
+{
+  "name": "apv-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "API para un administrador de pacientes de veterinaria",
+  "main": "server.js",
+  "scripts": {
+    "start": "node ./server.js",
+    "dev": "nodemon ./server.js"
+  },
+  "keywords": [
+    "apv",
+    "Node.js",
+    "Express.js",
+    "MongoDB"
+  ],
+  "author": "Jose Alvarado",
+  "license": "ISC"
+}
