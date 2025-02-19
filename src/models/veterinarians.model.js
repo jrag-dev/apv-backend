@@ -1,4 +1,5 @@
-import { Schema } from "mongoose";
+import { Schema, model } from "mongoose";
+import { generarId } from "../helpers/generarId.js";
 
 const veterinarianSchema = new Schema(
   {
@@ -28,7 +29,8 @@ const veterinarianSchema = new Schema(
       default: null
     },
     token: {
-      type: String
+      type: String,
+      default: generarId()
     },
     confirmed: {
       type: Boolean,
