@@ -5,12 +5,15 @@ import { authenticateVeterinarian } from "../middlewares/auth.middleware.js";
 const router = Router();
 const veterinarianController = new VeterinarianController();
 
+// Public routes
 router.post('/register', (req, res) => veterinarianController.register(req, res));
-
 router.get('/confirmar/:token', (req, res) => veterinarianController.confirmar(req, res));
-
 router.post('/login', (req, res) => veterinarianController.login(req, res));
+router.post('/forgot-password', (req, res) => veterinarianController.forgotPassword(req, res)); // validate email
+router.get('/forgot-password/:token', (req, res) => veterinarianController.checkToken(req, res)); // send token
+router.post('/forgot-password/:token', (req, res) => veterinarianController.newPassword(req, res)); // new password
 
+// Private routes
 router.get('/profile', authenticateVeterinarian, (req, res) => veterinarianController.profile(req, res))
 
 export default router;

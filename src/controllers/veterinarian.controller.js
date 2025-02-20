@@ -1,4 +1,5 @@
 import { compare, hashed } from "../helpers/bcrypt.js";
+import { generarId } from "../helpers/generarId.js";
 import { createToken } from "../helpers/jwt.js";
 import Veterinarian from "../models/veterinarians.model.js";
 
@@ -107,11 +108,62 @@ class VeterinarianController {
     }
   }
 
+  async forgotPassword(req, res) {
+    const { email } = req.body;
+
+    const veterinarian = await Veterinarian.findOne({ email }, { password: 0 });
+    if (!veterinarian) {
+      const error = new Error('The veterinarian not exist');
+      return res.status(404).json({ success: false, message: error.message });
+    }
+
+    try {
+      veterinarian.token = generarId();
+      await veterinarian.save();
+      res.status(200).json({ success: true, message: 'An email has been sent with instructions to change the password'})
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  }
+
+  async checkToken(req, res) {
+    const { token } = req.params;
+
+    const isTokenValid = await Veterinarian.findOne({ token }, { password: 0});
+    if (isTokenValid) {
+      res.status(200).json({ success: true, message: 'Valid token and the vet exists'})
+    } else {
+      const error = new Error('Invalid token');
+      return res.status(400).json({ success: false, message: error.message });
+    }
+
+  }
+
+  async newPassword(req, res) {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    const veterinarian = await Veterinarian.findOne({ token });
+    if (!veterinarian) {
+      const error = new Error('The veterinarian not exist');
+      return res.status(404).json({ success: false, message: error.message });
+    }
+
+    try {
+      veterinarian.token = null;
+      const newPassword = await hashed(password);
+      veterinarian.password = newPassword;
+      await veterinarian.save();
+      res.status(200).json({ success: true, message: 'password changed successfully'})
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  }
+
   async profile(req, res) {
     const { veterinarian } = req;
     res.status(200).json({ success: true, message: 'Veterinarian profile', perfil: veterinarian })
   }
-
 
 }
 
