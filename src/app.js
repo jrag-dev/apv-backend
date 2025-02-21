@@ -5,6 +5,7 @@ import cors from "cors";
 import "dotenv/config";
 import "./config/db.js";
 import veterinarianRoutes from "./routes/veterinarian.route.js";
+import patientRoutes from "./routes/patient.route.js";
 
 
 class App {
@@ -25,6 +26,7 @@ class App {
 
   routes() {
     this.app.use('/api/v1/veterinarians', veterinarianRoutes);
+    this.app.use('/api/v1/patients', patientRoutes);
   }
 }
 
