@@ -1,4 +1,5 @@
 import { compare, hashed } from "../helpers/bcrypt.js";
+import emailRegister from "../helpers/emailRegister.js";
 import { generarId } from "../helpers/generarId.js";
 import { createToken } from "../helpers/jwt.js";
 import Veterinarian from "../models/veterinarians.model.js";
@@ -31,6 +32,14 @@ class VeterinarianController {
         }
       )
       const veterinarian = await newVeterinarian.save();
+
+      // Send email to confirmate a new veterinarian
+      emailRegister({
+        email,
+        name,
+        token: veterinarian.token
+      });
+
       res.status(201).json(
         { 
           success: true, 
