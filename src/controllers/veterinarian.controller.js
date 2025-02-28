@@ -1,4 +1,5 @@
 import { compare, hashed } from "../helpers/bcrypt.js";
+import emailForgotPassword from "../helpers/emailForgotPassword.js";
 import emailRegister from "../helpers/emailRegister.js";
 import { generarId } from "../helpers/generarId.js";
 import { createToken } from "../helpers/jwt.js";
@@ -129,6 +130,16 @@ class VeterinarianController {
     try {
       veterinarian.token = generarId();
       await veterinarian.save();
+
+      // Sent email for reset password
+      emailForgotPassword(
+        {
+          email,
+          name: veterinarian.name,
+          token: veterinarian.token
+        }
+      )
+
       res.status(200).json({ success: true, message: 'An email has been sent with instructions to change the password'})
     } catch (err) {
       res.status(500).json({ success: false, message: err.message });
@@ -140,7 +151,7 @@ class VeterinarianController {
 
     const isTokenValid = await Veterinarian.findOne({ token }, { password: 0});
     if (isTokenValid) {
-      res.status(200).json({ success: true, message: 'Valid token and the vet exists'})
+      res.status(200).json({ success: true, message: 'Enter you new password'})
     } else {
       const error = new Error('Invalid token');
       return res.status(400).json({ success: false, message: error.message });
@@ -160,8 +171,8 @@ class VeterinarianController {
 
     try {
       veterinarian.token = null;
-      const newPassword = await hashed(password);
-      veterinarian.password = newPassword;
+      const hashedPassword = await hashed(password);
+      veterinarian.password = hashedPassword;
       await veterinarian.save();
       res.status(200).json({ success: true, message: 'password changed successfully'})
     } catch (err) {

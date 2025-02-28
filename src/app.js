@@ -19,7 +19,18 @@ class App {
   middlewares() {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: false }));
-    this.app.use(cors());
+
+    const dominiosAllowed = [process.env.FRONTEND_URL];
+    const corsOptions = {
+      origin: function(origin, callback) {
+        if (dominiosAllowed.indexOf(origin) !== -1) {
+          callback(null, true);
+        } else {
+          callback(new Error('No permitido por CORS'));
+        }
+      }
+    }
+    this.app.use(cors(corsOptions));
     this.app.use(helmet());
     this.app.use(morgan('tiny'));
   }
