@@ -110,7 +110,15 @@ class VeterinarianController {
         { 
           success: true, 
           message: 'Veterinarians logged successfully',
-          token
+          veterinarian: {
+            _id: veterinariandb._id,
+            name: veterinariandb.name,
+            email: veterinariandb.email,
+            token,
+            web: veterinariandb.web,
+            phone: veterinariandb.phone,
+            confirmed: veterinariandb.confirmed
+          }
         }
       );
     } catch (err) {
@@ -182,7 +190,7 @@ class VeterinarianController {
 
   async profile(req, res) {
     const { veterinarian } = req;
-    res.status(200).json({ success: true, message: 'Veterinarian profile', perfil: veterinarian })
+    res.status(200).json({ success: true, message: 'Veterinarian profile', veterinarian })
   }
 
 }
