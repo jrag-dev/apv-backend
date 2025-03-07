@@ -193,6 +193,43 @@ class VeterinarianController {
     res.status(200).json({ success: true, message: 'Veterinarian profile', veterinarian })
   }
 
+  async updateProfile(req, res) {
+    const { id } = req.params;
+
+    const veterinarian = await Veterinarian.findOne({ _id: id }, { password: 0});
+    if (!veterinarian) {
+      const error = new Error('Hubo un error');
+      return res.status(404).json({ success: false, message: error.message });
+    }
+
+    if (veterinarian.email !== req.body.email) {
+      const emailAlreadyExist = await Veterinarian.findOne({ email: req.body.email });
+      if (emailAlreadyExist) {
+        const error = new Error('El email ya se encuentra registrado');
+        return res.status(404).json({ success: false, message: error.message });
+      }
+    }
+
+    try  {
+      veterinarian.name = req.body.name || veterinarian.name;
+      veterinarian.email = req.body.email || veterinarian.email;
+      veterinarian.web = req.body.web || veterinarian.web;
+      veterinarian.phone = req.body.phone || veterinarian.phone;
+
+      const updatedVeterinarian = await veterinarian.save();
+
+      res.status(200).json(
+        {
+          success: true,
+          message: 'Your information has been updated successfully',
+          veterinarian: updatedVeterinarian
+        }
+      )
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });res.sta
+    }
+  }
+
 }
 
 export default VeterinarianController;
