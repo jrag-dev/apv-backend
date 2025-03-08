@@ -16,5 +16,6 @@ router.post('/forgot-password/:token', (req, res) => veterinarianController.newP
 // Private routes
 router.get('/profile', authenticateVeterinarian, (req, res) => veterinarianController.profile(req, res))
 router.put('/profile/:id', authenticateVeterinarian, (req, res) => veterinarianController.updateProfile(req, res));
+router.put('/update-password', authenticateVeterinarian, (req, res) => veterinarianController.updatePassword(req, res));
 
 export default router;

@@ -226,7 +226,49 @@ class VeterinarianController {
         }
       )
     } catch (err) {
-      res.status(500).json({ success: false, message: err.message });res.sta
+      res.status(500).json({ success: false, message: err.message });
+    }
+  }
+
+  async updatePassword(req, res) {
+    const { passwordActual, passwordNuevo } = req.body;
+    const { _id } = req.veterinarian;
+
+    const veterinarianDB = await Veterinarian.findOne({ _id });
+    if (!veterinarianDB) {
+      const error = new Error('Hubo un error');
+      return res.status(404).json(
+        { 
+          success: false, 
+          message: error.message 
+        }
+      );
+    }
+
+    try {
+      const isPasswordActualCorrect = await compare(passwordActual, veterinarianDB.password);
+      if (!isPasswordActualCorrect) {
+      const error = new Error('Tu password actual es incorrecto');
+        return res.status(404).json(
+          { 
+            success: false, 
+            message: error.message 
+          }
+        );
+      }
+      const newPassword = await hashed(passwordNuevo);
+      veterinarianDB.password = newPassword;
+
+      await veterinarianDB.save();
+
+      res.status(200).json(
+        {
+          message: 'Password actualizado correctamente',
+          success: true
+        }
+      )
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
     }
   }
 
